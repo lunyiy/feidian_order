@@ -1,12 +1,12 @@
 <template>
   <div class="menu-management">
     <div>
-      <SearchMeal></SearchMeal>
+      <SearchMeal @search="search" ref="searchMeal"></SearchMeal>
     </div>
     <div class="menu">
-      <Meal :meal="meal">
-        <template v-slot:edit-price >
-          <span v-show="meal.isEditing" >
+      <Meal :meal="meal" v-for="(meal, index) in meals" :key="meal">
+        <template v-slot:edit-price>
+          <span v-show="meal.isEditing">
             ￥<input
               type="number"
               min="0"
@@ -16,7 +16,12 @@
           </span>
         </template>
         <template v-slot:func-btn>
-          <el-button type="warning" size="mini" class="slotbtn btn1" round
+          <el-button
+            type="warning"
+            size="mini"
+            class="slotbtn btn1"
+            round
+            @click="deleteMeal(index)"
             >删除</el-button
           >
           <el-button
@@ -24,7 +29,7 @@
             size="mini"
             v-if="!meal.isEditing"
             class="slotbtn btn2"
-            @click="isEditPrice()"
+            @click="isEditPrice(index)"
             round
             >调价</el-button
           >
@@ -33,7 +38,7 @@
             size="mini"
             v-else
             class="slotbtn btn2"
-             @click="isEditPrice()"
+            @click="isEditPrice(index)"
             round
             >确定</el-button
           >
@@ -50,7 +55,7 @@
         round
         >添加新菜</el-button
       >
-      <add-meal v-else @cancel="cancelAdd()"></add-meal>
+      <AddMeal v-else @cancel="cancelAdd()" @refresh="getMeals()"></AddMeal>
     </div>
   </div>
 </template>
@@ -59,6 +64,7 @@
 import Meal from "../User/Menu/Meal";
 import AddMeal from "../tools/AddMeal.vue";
 import SearchMeal from "../tools/SearchMeal";
+import request from "../../utils/js/netwok/request";
 
 export default {
   name: "MenuManagement",
@@ -69,12 +75,7 @@ export default {
   },
   data() {
     return {
-      meal: {
-        dishName: "辣椒炒肉",
-        counts: 0,
-        price: 10,
-        isEditing: false,
-      },
+      meals: [],
       isAddMeal: false,
     };
   },
@@ -85,9 +86,91 @@ export default {
     cancelAdd() {
       this.isAddMeal = false;
     },
-    isEditPrice() {
-      this.meal.isEditing = this.meal.isEditing?false:true;
+    getMeals() {
+      request({
+        url: "/menu",
+        method: "get",
+      })
+        .then((result) => {
+          this.meals = result.data.map(function (meal) {
+            meal.isEditing = false;
+            return meal;
+          });
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
+    isEditPrice(index) {
+      this.meals[index].isEditing = this.meals[index].isEditing ? false : true;
+      if (!this.meals[index].isEditing) {
+        request({
+          url: "/priceAdiust",
+          method: "post",
+          data: {
+            meal: this.meals[index],
+          },
+        }).catch((err) => {
+          console.log(err);
+        });
+      }
+    },
+    deleteMeal(index) {
+      request({
+        url: "/deleteMeal",
+        method: "post",
+        data: {
+          meal: this.meals[index],
+        },
+      })
+        .then((result) => {
+          this.getMeals();
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+    search(name) {
+      request({
+        url: "/menu",
+        method: "get",
+      })
+        .then((result) => {
+          if (name.length !== 0) {
+            this.meals = result.data
+              .filter(function (meal) {
+                return meal.dishName.indexOf(name) > 0;
+              })
+              .map(function (meal) {
+                meal.isEditing = false;
+                return meal;
+              });
+          } else {
+            this.meals = result.data.map(function (meal) {
+              meal.isEditing = false;
+              return meal;
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
+  },
+  created() {
+    request({
+      url: "/menu",
+      method: "get",
+    })
+      .then((result) => {
+        this.meals = result.data.map(function (meal) {
+          meal.isEditing = false;
+          return meal;
+        });
+      })
+      .catch((err) => {
+        console.log(err);
+      });
   },
 };
 </script>
@@ -95,6 +178,7 @@ export default {
 <style scoped>
 .menu {
   height: 330px;
+  overflow: auto;
 }
 .creat {
   margin: 20px 0;

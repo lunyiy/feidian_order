@@ -17,7 +17,7 @@
     </div>
 
     <div class="btn-div">
-      <el-button type="primary" @click="toPay()" class="btn to-pay" round>去结算</el-button>
+      <el-button type="warning" :disabled="!totalPrices" @click="toPay()" class="btn to-pay" round>去结算</el-button>
     </div>
   </div>
 </template>
@@ -43,17 +43,14 @@ export default {
       return this.orderMeals.reduce(function (pre, meal) {
         return pre + meal.price * meal.counts;
       }, 0);
-    },
-    totalCounts() {
-      return this.orderMeals.reduce(function (pre, meal) {
-        return pre + meal.counts;
-      }, 0);
     }
   },
   methods: {
     toPay() {
-      console.log(this.orderMeals)
-      this.$router.push('/user/order')
+     
+      // this.$router.push('/user/order')
+
+      
     }
   }
 };
@@ -98,4 +95,5 @@ export default {
   padding: 0 30px;
   font-size: 0.8rem;
 }
+
 </style>

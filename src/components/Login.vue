@@ -81,6 +81,7 @@
 
 <script>
 import tools from "../utils/js/tools";
+import request from "../utils/js/netwok/request";
 
 export default {
   name: "Login",
@@ -98,9 +99,11 @@ export default {
           "",
           "请输入邮箱账号",
           "邮箱格式错误",
-          "邮箱不存在",
+          "账号不存在",
           "请输入密码",
           "密码错误",
+          "无管理员权限",
+          "登录失败，请稍后再试",
         ],
       },
     };
@@ -110,6 +113,9 @@ export default {
     const email = tools.getCookie("orderLoginEmail");
     const password = tools.getCookie("orderLoginPassword");
     const loginType = tools.getCookie("orderLoginType");
+
+    this.user.email = email;
+    this.user.password = password;
 
     if (email && password && loginType) {
       this.$root.$data.isActive = true;
@@ -123,34 +129,35 @@ export default {
   methods: {
     login() {
       if (!this.error.num && this.user.email && this.user.password) {
-        const email = tools.getCookie("orderLoginEmail");
-        const password = tools.getCookie("orderLoginPassword");
-        const loginType = tools.getCookie("orderLoginType");
-
-        if (email !== this.user.email) {
-          this.error.num = 3;
-          return;
-        } else if (password === "") {
-          this.error.num = 4;
-          return;
-        } else if (password !== this.user.password) {
-          this.error.num = 5;
-          return;
-        } else if (this.isRemember) {
-          tools.setCookie("orderLoginEmail", this.user.email, 7);
-          tools.setCookie("orderLoginPassword", this.user.password, 7);
-          tools.setCookie("orderLoginType", this.user.userType, 7);
-          this.$root.$data.isActive = true;
-          if (this.user.userType === "common") this.$router.replace("/user");
-          else this.$router.replace("/admin");
-        } else if (!this.isRemember) {
-          tools.setCookie("orderLoginEmail", this.user.email);
-          tools.setCookie("orderLoginPassword", this.user.password);
-          tools.setCookie("orderLoginType", this.user.userType);
-          this.$root.$data.isActive = true;
-          if (this.user.userType === "common") this.$router.replace("/user");
-          else this.$router.replace("/admin");
-        }
+        request({
+          url: "/login",
+          method: 'post',
+          data: {
+            user: this.user,
+          },
+        })
+          .then((result) => {
+            if (result.data === 0) {
+              if (this.isRemember) {
+                tools.setCookie("orderLoginEmail", this.user.email, 7);
+                tools.setCookie("orderLoginPassword", this.user.password, 7);
+                tools.setCookie("orderLoginType", this.user.userType, 7);
+              } else if (!this.isRemember) {
+                tools.setCookie("orderLoginEmail", this.user.email);
+                tools.setCookie("orderLoginPassword", this.user.password);
+                tools.setCookie("orderLoginType", this.user.userType);
+              }
+              this.$root.$data.isActive = true;
+              if (this.user.userType === "common")
+                this.$router.replace("/user");
+              else this.$router.replace("/admin");
+            } else {
+              this.error.num = result.data;
+            }
+          })
+          .catch((err) => {
+            this.error.num = result.data;
+          });
       }
     },
     confirmEmail() {

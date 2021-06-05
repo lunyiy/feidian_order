@@ -1,5 +1,6 @@
 <template>
   <div id="menu">
+    <SearchMeal @search="search"></SearchMeal>
     <el-scrollbar height="365px">
       <div class="item" :key="meal.dishName" v-for="(meal, index) in meals">
         <Meal
@@ -19,61 +20,20 @@
 <script>
 import Meal from "./Menu/Meal";
 import Trolley from "./Menu/Trolley";
+import request from "../../utils/js/netwok/request";
+import SearchMeal from "../tools/SearchMeal";
 
 export default {
   name: "Menu",
   data() {
     return {
-      meals: [
-        {
-          dishName: "辣椒炒肉",
-          counts: 0,
-          price: 10,
-        },
-        {
-          dishName: "番茄炒蛋",
-          counts: 0,
-          price: 100,
-        },
-        {
-          dishName: "炸鸡",
-          counts: 0,
-          price: 20,
-        },
-        {
-          dishName: "任梓睿",
-          counts: 0,
-          price: 1,
-        },
-        {
-          dishName: "油焖大虾",
-          counts: 0,
-          price: 1000,
-        },
-        {
-          dishName: "番茄炒蛋",
-          counts: 0,
-          price: 100,
-        },
-        {
-          dishName: "炸鸡",
-          counts: 0,
-          price: 20,
-        },
-      ],
+      meals: [],
     };
   },
   components: {
     Meal,
     Trolley,
-  },
-  methods: {
-    increase(index) {
-      this.meals[index].counts++;
-    },
-    decrease(index) {
-      this.meals[index].counts--;
-    },
+    SearchMeal,
   },
   computed: {
     orderMeals() {
@@ -81,7 +41,52 @@ export default {
         return meal.counts > 0;
       });
     },
-    
+  },
+  created() {
+    request({
+      url: "/menu",
+      method: "get",
+    })
+      .then((result) => {
+        this.meals = result.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
+   methods: {
+    increase(index) {
+      this.meals[index].counts++;
+    },
+    decrease(index) {
+      this.meals[index].counts--;
+    },
+    search(name) {
+      request({
+        url: "/menu",
+        method: "get",
+      })
+        .then((result) => {
+          if (name.length !== 0) {
+            this.meals = result.data
+              .filter(function (meal) {
+                return meal.dishName.indexOf(name) > 0;
+              })
+              .map(function (meal) {
+                meal.isEditing = false;
+                return meal;
+              });
+          } else {
+            this.meals = result.data.map(function (meal) {
+              meal.isEditing = false;
+              return meal;
+            });
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
+    },
   },
 };
 </script>
@@ -98,5 +103,4 @@ export default {
   text-align: left;
   overflow: hidden;
 }
-
 </style>

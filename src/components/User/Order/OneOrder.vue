@@ -65,7 +65,8 @@ export default {
   overflow: hidden;
   width: 99%;
   height: 5rem;
-  border: 1px solid black;
+  border: 1px solid #CED7E2;
+  border-right: 0px;
   text-align: left;
 }
 .left {
@@ -83,7 +84,7 @@ export default {
 .right {
   width: 9.375rem;
   height: 100%;
-  border: 1px solid black;
+  /* border: 1px solid black; */
 }
 .btn {
   position: absolute;

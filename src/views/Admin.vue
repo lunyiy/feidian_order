@@ -10,30 +10,26 @@
             >菜单管理</el-menu-item
           >
           <el-menu-item class="el-menu-item" @click="exit()"
-            ><span style="color: red;">退出登录</span></el-menu-item
+            ><span style="color: red">退出登录</span></el-menu-item
           >
         </el-menu>
       </div>
-      <div >
-        <router-view @btn-click="click()"></router-view>
+      <div>
+        <router-view></router-view>
       </div>
     </div>
   </div>
 </template>
 
 <script>
-import tools from '../utils/js/tools'
+import tools from "../utils/js/tools";
 
 export default {
   name: "Admin",
   data() {
-    return {
-      
-    };
+    return {};
   },
-  components: {
-    
-  },
+  components: {},
   methods: {
     exit() {
       tools.removeCookie("orderLoginEmail");
@@ -41,9 +37,7 @@ export default {
       // tools.removeCookie("orderLoginType");
       this.$router.replace("/login");
     },
-    click() {
-      console.log('成功了')
-    }
+    
   },
 };
 </script>
@@ -52,7 +46,7 @@ export default {
 .router-link-active {
   color: #409eff;
 }
-#admin{
+#admin {
   height: 28.125rem;
   overflow: hidden;
 }
@@ -66,7 +60,6 @@ export default {
   width: 7.5rem;
   height: 28.125rem;
   background-color: rgba(179, 192, 209, 0.5);
-
 }
 .el-menu {
   background-color: #ced7e2;

@@ -45,6 +45,7 @@
 
 <script>
 import tools from "../utils/js/tools";
+import request from "../utils/js/netwok/request";
 
 export default {
   name: "Register",
@@ -67,10 +68,27 @@ export default {
         this.user.email !== "" &&
         this.user.password !== ""
       ) {
-        tools.setCookie("orderLoginEmail", this.user.email);
-        tools.setCookie("orderLoginPassword", this.user.password);
-        tools.setCookie("orderLoginType", '');
-        this.$router.push("/login");
+        request({
+          url: "/register",
+          method: 'post',
+          data: {
+            user: this.user,
+          },
+        })
+          .then((result) => {
+            if (result.data === 0) {
+              tools.setCookie("orderLoginEmail", this.user.email);
+              tools.setCookie("orderLoginPassword", this.user.password);
+              tools.setCookie("orderLoginType", "");
+              this.$router.push("/login");
+            } else {
+              alert(result.data);
+            }
+          })
+          .catch((err) => {
+            alert(err);
+            history.go(0);
+          });
       }
     },
   },
