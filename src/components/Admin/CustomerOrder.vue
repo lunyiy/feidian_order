@@ -52,13 +52,15 @@ export default {
         method: "post",
         data: {
           orderStatus: 1,
-          id: this.orders[index]._id
+          id: this.orders[index]._id,
         },
-      }).then((result) => {
-        this.orders[index].orderStatus = 1
-      }).catch((err) => {
-        console.log(err)
       })
+        .then((result) => {
+          this.orders[index].orderStatus = 1;
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     },
   },
 };
@@ -74,7 +76,11 @@ export default {
   width: 80px;
   font-size: 0.45rem;
 }
-.order{
+.order {
   margin: 0 0 5px 0;
+}
+.customer-order {
+  height: 28.125rem;
+  overflow-y: auto;
 }
 </style>
