@@ -31,9 +31,12 @@ export default {
     exit() {
       tools.removeCookie("orderLoginEmail");
       tools.removeCookie("orderLoginPassword");
-      tools.removeCookie("orderLoginTYype");
+      tools.removeCookie("orderLoginType");
       this.$router.replace("/login");
     },
+  },
+  created() {
+    this.$root.userEmail = tools.getCookie('orderLoginEmail')
   }
 };
 </script>

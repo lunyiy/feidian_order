@@ -24,6 +24,7 @@
 
 <script>
 import tools from "../src/utils/js/tools";
+import request from "../src/utils/js/netwok/request";
 
 export default {
   name: "App",
@@ -32,40 +33,51 @@ export default {
       isActive: false,
       toPath: ["/user", "/admin"],
       to: 0,
+      userEmail: tools.getCookie('orderLoginEmail')
     };
   },
   created() {
     const email = tools.getCookie("orderLoginEmail");
     const password = tools.getCookie("orderLoginPassword");
-    const loginType = tools.getCookie("orderLoginType");
-    //发送axios请求，if 正确
-
-    if (email && password && loginType) {
-      this.isActive = true;
-      if (loginType === "common") {
-        this.to = 0;
-        this.$router.push("/user");
-      } else if (loginType === "admin") {
-        this.to = 1;
-        this.$router.push("/admin");
-      } else {
-        console.log("出现了问题");
-      }
-      // this.$router.push("/user/order");
+    const userType = tools.getCookie("orderLoginType");
+    if (email && password && userType) {
+      const user = {
+        email,
+        password,
+        userType,
+      };
+      request({
+        url: "/login",
+        method: "post",
+        data: {
+          user: user,
+        },
+      })
+        .then((result) => {
+          if (result.data === 0) {
+            this.isActive = true;
+            this.isRigthEmail = true;
+            if (userType === "common") {
+              this.to = 0;
+              this.$router.push("/user");
+            } else if (userType === "admin") {
+              this.to = 1;
+              this.$router.push("/admin");
+            } else {
+              console.log("出现了问题");
+            }
+          }
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     }
   },
   computed: {
-    userEmail() {
-      const email = tools.getCookie("orderLoginEmail");
-      const password = tools.getCookie("orderLoginPassword");
-      const loginType = tools.getCookie('orderLoginType')
-      //发送axios请求，if 正确 return email 
-
-      if (email && password && loginType) {
-        this.isActive = true;
-        return email;
-      }
-    },
+    // userEmail() {
+    //   const email = tools.getCookie("orderLoginEmail");
+    //   return email;
+    // },
   },
 };
 </script>

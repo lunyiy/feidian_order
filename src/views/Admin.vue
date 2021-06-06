@@ -37,7 +37,9 @@ export default {
       // tools.removeCookie("orderLoginType");
       this.$router.replace("/login");
     },
-    
+  },
+  created() {
+    this.$root.userEmail = tools.getCookie("orderLoginEmail");
   },
 };
 </script>

@@ -3,16 +3,19 @@
   <div id="home">
     <el-carousel indicator-position="outside">
       <el-carousel-item>
-        <img src="../assets/img/img.jpg" alt="" />
+        <img src="../assets/img/img.jpg" class="home-img" alt="" />
       </el-carousel-item>
       <el-carousel-item>
-        <img src="../assets/img/img.jpg" alt="" />
+        <img src="../assets/img/img1.jpg" class="home-img" alt="" />
       </el-carousel-item>
       <el-carousel-item>
-        <img src="../assets/img/img.jpg" alt="" />
+        <img src="../assets/img/img2.jpg" class="home-img" alt="" />
       </el-carousel-item>
       <el-carousel-item>
-        <img src="../assets/img/img.jpg" alt="" />
+        <img src="../assets/img/img3.jpg" class="home-img" alt="" />
+      </el-carousel-item>
+      <el-carousel-item>
+        <img src="../assets/img/img4.jpg" class="home-img" alt="" />
       </el-carousel-item>
     </el-carousel>
   </div>
@@ -42,5 +45,8 @@ export default {
 
 .el-carousel__item:nth-child(2n + 1) {
   background-color: #d3dce6;
+}
+.home-img{
+  height: 18.625rem;
 }
 </style>

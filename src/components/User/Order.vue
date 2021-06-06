@@ -1,40 +1,54 @@
 <template>
   <div id="info">
-    <OneOrder :order="order" @cancel="cancel()"></OneOrder>
+    <OneOrder
+      class="order"
+      v-for="(order, index) in orders"
+      :key="order"
+      :order="order"
+      @cancel="cancel(index)"
+    ></OneOrder>
   </div>
 </template>
 
 <script>
 import OneOrder from "./Order/OneOrder";
+import request from "../../utils/js/netwok/request";
+import tools from '../../utils/js/tools'
 
 export default {
   name: "Order",
   data() {
     return {
-      order: {
-        orderMeals: [
-          {
-            dishName: "辣椒炒肉",
-            counts: 1,
-            price: 10,
-          },
-          {
-            dishName: "番茄炒蛋",
-            counts: 2,
-            price: 100,
-          },
-        ],
-        statusType: 0,
-      },
+      orders: [],
     };
   },
   components: {
     OneOrder,
   },
   methods: {
-    cancel() {
-      this.order.statusType = 2
-    }
-  }
+    cancel(index) {
+      this.orders[index].orderStatus = 2;
+    },
+  },
+  created() {
+    request({
+      url: "/order",
+      params: {
+        mail: tools.getCookie('orderLoginEmail')
+      }
+    })
+      .then((result) => {
+        this.orders = result.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
 };
 </script>
+
+<style scoped>
+.order{
+  margin: 0 0 5px 0;
+}
+</style>

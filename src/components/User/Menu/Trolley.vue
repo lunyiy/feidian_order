@@ -17,18 +17,28 @@
     </div>
 
     <div class="btn-div">
-      <el-button type="warning" :disabled="!totalPrices" @click="toPay()" class="btn to-pay" round>去结算</el-button>
+      <el-button
+        type="warning"
+        :disabled="!totalPrices"
+        @click="toPay()"
+        class="btn to-pay"
+        round
+        >去结算</el-button
+      >
     </div>
   </div>
 </template>
 
 <script>
+import request from "../../../utils/js/netwok/request";
+import tools from "../../../utils/js/tools";
+
 export default {
   name: "Trolley",
   data() {
     return {
-      isPerform: false
-    }
+      isPerform: false,
+    };
   },
   props: {
     orderMeals: {
@@ -43,16 +53,35 @@ export default {
       return this.orderMeals.reduce(function (pre, meal) {
         return pre + meal.price * meal.counts;
       }, 0);
-    }
+    },
   },
   methods: {
     toPay() {
-     
       // this.$router.push('/user/order')
+      const mail = tools.getCookie("orderLoginEmail");
+      const orderNumber = tools.orderNumber();
+      const orderMeals = this.orderMeals;
 
-      
-    }
-  }
+      // console.log(typeof(orderMeals[0]))
+
+      const order = {
+        mail,
+        orderNumber,
+        orderMeals,
+      };
+      request({
+        url: '/order',
+        method: 'post',
+        data: {
+          order
+        }
+      }).then((result) => {
+        this.$router.push('/user/order')
+      }).catch((err) => {
+        console.log(err)
+      })
+    },
+  },
 };
 </script>
 
@@ -68,7 +97,7 @@ export default {
 .prices {
   width: 50px;
 }
-.orders{
+.orders {
   flex: 1;
   overflow-y: auto;
   padding: 0;
@@ -78,7 +107,7 @@ export default {
   line-height: 1.15rem;
   font-size: small;
 }
-.orders>p{
+.orders > p {
   margin: 0;
 }
 .btn-div {
@@ -95,5 +124,4 @@ export default {
   padding: 0 30px;
   font-size: 0.8rem;
 }
-
 </style>

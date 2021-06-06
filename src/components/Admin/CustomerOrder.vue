@@ -1,13 +1,18 @@
 <template>
   <div class="customer-order">
-    <OneOrder :order="order">
+    <OneOrder
+      class="order"
+      v-for="(order, index) in orders"
+      :key="order"
+      :order="order"
+    >
       <template v-slot:func-btn>
         <el-button
           size="small"
           class="btn"
           type="warning"
           round
-          @click="finshed()"
+          @click="finshed(index)"
           >完结订单</el-button
         >
       </template>
@@ -17,6 +22,7 @@
 
 <script>
 import OneOrder from "../User/Order/OneOrder.vue";
+import request from "../../utils/js/netwok/request";
 
 export default {
   name: "CustomerOrder",
@@ -25,26 +31,34 @@ export default {
   },
   data() {
     return {
-      order: {
-        orderMeals: [
-          {
-            dishName: "辣椒炒肉",
-            counts: 1,
-            price: 10,
-          },
-          {
-            dishName: "番茄炒蛋",
-            counts: 2,
-            price: 100,
-          },
-        ],
-        statusType: 0,
-      },
+      orders: [],
     };
   },
+  created() {
+    request({
+      url: "/allOrder",
+    })
+      .then((result) => {
+        this.orders = result.data;
+      })
+      .catch((err) => {
+        console.log(err);
+      });
+  },
   methods: {
-    finshed() {
-      this.order.statusType = 1;
+    finshed(index) {
+      request({
+        url: "/updateOrder",
+        method: "post",
+        data: {
+          orderStatus: 1,
+          id: this.orders[index]._id
+        },
+      }).then((result) => {
+        this.orders[index].orderStatus = 1
+      }).catch((err) => {
+        console.log(err)
+      })
     },
   },
 };
@@ -59,5 +73,8 @@ export default {
   padding: 0;
   width: 80px;
   font-size: 0.45rem;
+}
+.order{
+  margin: 0 0 5px 0;
 }
 </style>

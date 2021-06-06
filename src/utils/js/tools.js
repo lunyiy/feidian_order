@@ -54,6 +54,18 @@ const tools = {
   confirmEmail(email) {
     const result = email.search(/^\w+([-+.]\w+)*@\w+([-.]\w+)*\.\w+([-.]\w+)*$/)
     return result > -1 ? true : false
+  },
+  orderNumber() {
+    const date = new Date()
+
+    function tofix2(num) {
+      if (num < 10) {
+        return '0' + num
+      }
+      return num + ''
+    }
+    return date.getFullYear() + tofix2(date.getMonth() + 1) + tofix2(date.getDate()) + tofix2(date.getHours()) + tofix2(date.getMinutes()) + tofix2(date.getSeconds())
+
   }
 }
 

@@ -110,25 +110,16 @@ export default {
   },
   props: {},
   created() {
+    this.$root.isActive = false
     const email = tools.getCookie("orderLoginEmail");
     const password = tools.getCookie("orderLoginPassword");
-    const loginType = tools.getCookie("orderLoginType");
-
+ 
     this.user.email = email;
     this.user.password = password;
-
-    if (email && password && loginType) {
-      this.$root.$data.isActive = true;
-      if (loginType === "common") {
-        this.$router.replace("/user");
-      } else if (loginType === "admin") {
-        this.$router.replace("/admin");
-      }
-    } else this.$root.$data.isActive = false;
   },
   methods: {
     login() {
-      if (!this.error.num && this.user.email && this.user.password) {
+      if ((!this.error.num || this.error.num === 6)&& this.user.email && this.user.password) {
         request({
           url: "/login",
           method: 'post',
