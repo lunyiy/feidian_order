@@ -72,13 +72,7 @@ export default {
           console.log(err);
         });
     }
-  },
-  computed: {
-    // userEmail() {
-    //   const email = tools.getCookie("orderLoginEmail");
-    //   return email;
-    // },
-  },
+  }
 };
 </script>
 
